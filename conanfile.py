@@ -21,6 +21,12 @@ class Skia(ConanFile):
     #     exe = sys.executable
     #     return str(exe).replace("\\", "/")
 
+    @property
+    def _gn(self):
+        if self.settings.os == "Windows":
+            return "gn.exe"
+        return "gn"
+
     # def layout(self):
     #     self.folders.source = "."
 
@@ -33,7 +39,12 @@ class Skia(ConanFile):
         self.tool_requires("gn/cci.20210429")
 
     def build(self):
+        is_debug_build = "false"
+        if self.settings.build_type == "Debug":
+            is_debug_build = "true"
+
         opts = [
+            f"is_debug={is_debug_build}",
             "is_official_build=true",
 
             "skia_enable_fontmgr_empty=true",
@@ -56,21 +67,18 @@ class Skia(ConanFile):
             # "extra_cflags=[\"/arch:AVX\"]",
         ]
 
-        if self.settings.build_type == "Debug":
-            opts += ["is_debug=true"]
-        else:
-            opts += ["is_debug=false"]
+        if self.settings.os == "Macos":
+            opts.append("skia_use_gl=false")
+            opts.append("skia_use_metal=true")
 
-        if len(opts) > 0:
-            opts = '"--args=%s"' % " ".join(opts)
-        else:
-            opts = ""
+        assert len(opts) > 0
 
-        self.output.info("gn options: %s" % (opts))
+        args = " ".join(opts)
+        gn_args = f'"--args={args}"'
+        self.output.info("gn options: %s" % (gn_args))
 
         cwd = f'{self.source_folder}/skia'
-        # self.run('python tools/git-sync-deps', cwd=cwd)
-        self.run('gn.exe gen out/conan-build %s ' % (opts), cwd=cwd)
+        self.run(f'{self._gn} gen out/conan-build {gn_args} ', cwd=cwd)
         self.run('ninja -C out/conan-build', cwd=cwd)
 
         # build() will have access to the sources, obtained with the clone in source()
