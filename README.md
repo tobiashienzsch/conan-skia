@@ -52,3 +52,7 @@ compiler.runtime=MD
 [conf]
 tools.cmake.cmaketoolchain:generator=Visual Studio 17 2022
 ```
+
+### Issues
+
+- [ ] ClangCL does not work yet, because escaping the LLVM root path causes errors with `gn` on powershell or cmd
