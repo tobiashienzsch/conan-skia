@@ -64,14 +64,16 @@ class Skia(ConanFile):
             "skia_use_wuffs=false",
             "skia_use_zlib=false",
             # "clang_win=\"C:\Program Files\LLVM\"",
-            # "extra_cflags=[\"/arch:AVX\"]",
         ]
+
+        # if self.settings.os == "Windows":
+        # opts.append('''extra_cflags=["/arch:AVX"]''')
 
         if self.settings.os == "Macos":
             opts.append("skia_use_gl=false")
             opts.append("skia_use_metal=true")
-            opts.append('''extra_cflags=["-flto=full"]''')
-            opts.append('''extra_ldflags=["-flto=full"]''')
+            # opts.append('''extra_cflags=["-flto=full"]''')
+            # opts.append('''extra_ldflags=["-flto=full"]''')
 
         assert len(opts) > 0
 
@@ -88,7 +90,8 @@ class Skia(ConanFile):
         src = f'{self.source_folder}/skia'
         out = f'{src}/out/conan-build'
 
-        self.copy("*.h", dst="include/include", src=f'{src}/include', keep_path=True)
+        self.copy("*.h", dst="include/include",
+                  src=f'{src}/include', keep_path=True)
 
         self.copy("*.lib", dst="lib", src=out, keep_path=False)
         self.copy("*.dll", dst="bin", src=out, keep_path=False)
