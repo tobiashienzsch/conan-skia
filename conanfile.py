@@ -81,10 +81,18 @@ class Skia(ConanFile):
         self.run(f'{self._gn} gen out/conan-build {gn_args} ', cwd=cwd)
         self.run('ninja -C out/conan-build', cwd=cwd)
 
-        # build() will have access to the sources, obtained with the clone in source()
-        # hello = os.path.join(self.source_folder, "src/hello.cpp")
-        # self.output.info("MYCMAKE-BUILD: {}".format(load(self, cmake)))
-        # self.output.info("MYFILE-BUILD: {}".format(load(self, hello)))
+    def package(self):
+        src = f'{self.source_folder}/skia'
+        out = f'{src}/out/conan-build'
+        self.copy("*.h", dst="include/skia", src=src, keep_path=True)
+
+        self.copy("*.lib", dst="lib", src=out, keep_path=False)
+        self.copy("*.dll", dst="bin", src=out, keep_path=False)
+
+        self.copy("*.a", dst="lib", src=out, keep_path=False)
+        self.copy("*.so", dst="lib", src=out, keep_path=False)
+        self.copy("*.dylib", dst="lib", src=out, keep_path=False)
+
 
 # "skia_use_libjpeg_turbo_decode=false",
 # "skia_use_libjpeg_turbo_encode=false",
