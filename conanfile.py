@@ -70,11 +70,14 @@ class Skia(ConanFile):
         if self.settings.os == "Macos":
             opts.append("skia_use_gl=false")
             opts.append("skia_use_metal=true")
+            opts.append('''extra_cflags=["-flto=full"]''')
+            opts.append('''extra_ldflags=["-flto=full"]''')
 
         assert len(opts) > 0
 
         args = " ".join(opts)
-        gn_args = f'"--args={args}"'
+        gn_args = f''' '--args={args}' '''
+        self.output.info("raw options: %s" % (args))
         self.output.info("gn options: %s" % (gn_args))
 
         cwd = f'{self.source_folder}/skia'
@@ -84,7 +87,8 @@ class Skia(ConanFile):
     def package(self):
         src = f'{self.source_folder}/skia'
         out = f'{src}/out/conan-build'
-        self.copy("*.h", dst="include/skia", src=src, keep_path=True)
+
+        self.copy("*.h", dst="include/include", src=f'{src}/include', keep_path=True)
 
         self.copy("*.lib", dst="lib", src=out, keep_path=False)
         self.copy("*.dll", dst="bin", src=out, keep_path=False)
