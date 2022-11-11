@@ -49,7 +49,11 @@ class Skia(ConanFile):
 
             "skia_enable_fontmgr_empty=true",
             "skia_enable_gpu=true",
+            "skia_enable_graphite=false",
             "skia_enable_pdf=false",
+            "skia_enable_optimize_size=true",
+            "skia_enable_skottie=false",
+
             "skia_use_expat=false",
             "skia_use_freetype=false",
             "skia_use_harfbuzz=false",
@@ -63,11 +67,12 @@ class Skia(ConanFile):
             "skia_use_vulkan=false",
             "skia_use_wuffs=false",
             "skia_use_zlib=false",
-            # "clang_win=\"C:\Program Files\LLVM\"",
         ]
 
-        # if self.settings.os == "Windows":
-        # opts.append('''extra_cflags=["/arch:AVX"]''')
+        if self.settings.os == "Windows":
+            opts.append("skia_enable_fontmgr_win=true")
+            # opts.append('''extra_cflags=["/arch:AVX"]''')
+            # "clang_win=\"C:\Program Files\LLVM\"",
 
         if self.settings.os == "Macos":
             opts.append("skia_use_gl=false")
@@ -78,7 +83,7 @@ class Skia(ConanFile):
         assert len(opts) > 0
 
         args = " ".join(opts)
-        gn_args = f''' '--args={args}' '''
+        gn_args = f'"--args={args}"'
         self.output.info("raw options: %s" % (args))
         self.output.info("gn options: %s" % (gn_args))
 
